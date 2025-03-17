@@ -12,6 +12,14 @@ async function init() {
     const app = express();
 
     app.use(bodyParser.json());
+
+    app.get("/", (req, res) => {
+      res.status(200).json({
+        message: "Server is running",
+        data: null,
+      });
+    });
+
     app.use("/api", router);
 
     const PORT = 3000;
