@@ -13,7 +13,6 @@ async function init() {
     console.log(result);
 
     const app = express();
-    docs(app);
 
     app.use(cors());
     app.use(bodyParser.json());
@@ -25,6 +24,7 @@ async function init() {
       });
     });
 
+    docs(app);
     app.use("/api", router);
 
     app.listen(PORT, () => {
