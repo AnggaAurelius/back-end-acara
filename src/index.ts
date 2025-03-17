@@ -1,8 +1,11 @@
 import express from "express";
 import router from "./routes/api";
 import bodyParser from "body-parser";
+import cors from "cors";
 
 import db from "./utils/database";
+import docs from "./docs/route";
+const PORT = 3000;
 
 async function init() {
   try {
@@ -11,6 +14,7 @@ async function init() {
 
     const app = express();
 
+    app.use(cors());
     app.use(bodyParser.json());
 
     app.get("/", (req, res) => {
@@ -21,8 +25,7 @@ async function init() {
     });
 
     app.use("/api", router);
-
-    const PORT = 3000;
+    docs(app);
 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
