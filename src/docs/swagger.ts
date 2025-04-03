@@ -30,6 +30,16 @@ const doc = {
         identifier: "vayne",
         password: "123456",
       },
+      RegisterRequest: {
+        fullName: "vayne",
+        userName: "vayne",
+        email: "vayne@gmail.com",
+        password: "123456",
+        confirmPassword: "123456",
+      },
+      ActivaionRequset: {
+        code: "abcdef",
+      },
     },
   },
 };

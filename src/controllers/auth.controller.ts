@@ -22,7 +22,18 @@ const registerValidateSchema = Yup.object({
   fullName: Yup.string().required(),
   userName: Yup.string().required(),
   email: Yup.string().required(),
-  password: Yup.string().required(),
+  password: Yup.string()
+    .required()
+    .min(8, "Password must be at least 8 characters")
+    .test(
+      "password-complexity",
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+      (value) => {
+        if (!value) return false;
+
+        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
+      }
+    ),
   confirmPassword: Yup.string()
     .required()
     .oneOf([Yup.ref("password"), ""], "Password not match"),
@@ -31,7 +42,11 @@ const registerValidateSchema = Yup.object({
 export default {
   async register(req: Request, res: Response) {
     /**
-     #swagger.tags = ['Auth']
+      #swagger.tags = ['Auth']
+      #swagger.requestBody = {
+        requires: true,
+        schema: {$ref: "#/components/schemas/RegisterRequest"}
+      }
      */
     const { fullName, userName, email, password, confirmPassword } =
       req.body as unknown as TRegister;
@@ -79,6 +94,7 @@ export default {
       // get user data based on identifier -> email or username
       const userByIdentifier = await UserModel.findOne({
         $or: [{ email: identifier }, { userName: identifier }],
+        isActive: true,
       });
 
       if (!userByIdentifier) {
@@ -130,6 +146,45 @@ export default {
       res.status(200).json({
         message: "Success get user profile",
         data: result,
+      });
+    } catch (error) {
+      const err = error as unknown as Error;
+      res.status(400).json({
+        message: err.message,
+        data: null,
+      });
+    }
+  },
+
+  async activation(req: Request, res: Response) {
+    /**
+      #swagger.tags = ['Auth']
+      #swagger.requestBody = {
+        requires: true,
+        schema: {$ref: "#/components/schemas/ActivaionRequset"}
+      }
+     */
+    try {
+      const { code } = req.body as {
+        code: string;
+      };
+
+      const user = await UserModel.findOneAndUpdate(
+        {
+          activeCode: code,
+        },
+        {
+          activeCode: null,
+          isActive: true,
+        },
+        {
+          new: true,
+        }
+      );
+
+      res.status(200).json({
+        message: "Success activation",
+        data: user,
       });
     } catch (error) {
       const err = error as unknown as Error;
