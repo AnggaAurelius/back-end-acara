@@ -9,6 +9,7 @@ const connect = async () => {
 
     return Promise.resolve("Database connect");
   } catch (error) {
+    await mongoose.disconnect();
     return Promise.reject(error);
   }
 };
