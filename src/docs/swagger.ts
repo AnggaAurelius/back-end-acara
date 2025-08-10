@@ -5,8 +5,8 @@ const endpointsfiles = ["../routes/api.ts"];
 const doc = {
   info: {
     version: "v0.0.1",
-    title: "User Authentication API",
-    description: "API documentation for the User Authentication service. Provides endpoints for registration, login, and user management.",
+    title: "Dokumentasi",
+    description: "Dokumentasi",
   },
   servers: [
     {
