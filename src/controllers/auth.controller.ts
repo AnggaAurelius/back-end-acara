@@ -188,8 +188,7 @@ export default {
       }
      */
     try {
-      const { code } = activationValidateSchema.parse(req.body);
-
+      const { code } = activationValidateSchema.parse(req.query);
       const user = await UserModel.findOneAndUpdate(
         {
           activeCode: code,
