@@ -18,9 +18,7 @@
   "paths": {
     "/auth/register": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "description": "",
         "responses": {
           "200": {
@@ -49,9 +47,7 @@
     },
     "/auth/login": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "description": "",
         "responses": {
           "200": {
@@ -83,9 +79,7 @@
     },
     "/auth/me": {
       "get": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "description": "",
         "responses": {
           "200": {
@@ -107,9 +101,7 @@
     },
     "/auth/activation": {
       "post": {
-        "tags": [
-          "Auth"
-        ],
+        "tags": ["Auth"],
         "description": "",
         "responses": {
           "200": {
@@ -124,12 +116,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ActivaionRequset"
+                "$ref": "#/components/schemas/ActivationRequest"
               }
             },
             "application/xml": {
               "schema": {
-                "$ref": "#/components/schemas/ActivaionRequset"
+                "$ref": "#/components/schemas/ActivationRequest"
               }
             }
           }
@@ -189,7 +181,7 @@
           "name": "RegisterRequest"
         }
       },
-      "ActivaionRequset": {
+      "ActivationRequest": {
         "type": "object",
         "properties": {
           "code": {
@@ -198,7 +190,7 @@
           }
         },
         "xml": {
-          "name": "ActivaionRequset"
+          "name": "ActivationRequest"
         }
       }
     }

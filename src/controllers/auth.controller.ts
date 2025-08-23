@@ -1,42 +1,45 @@
 import { Request, Response } from "express";
-import * as Yup from "yup";
+import { z } from "zod";
 import UserModel from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../middlewares/auth.middleware";
 
-type TRegister = {
-  fullName: string;
-  userName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+// Infer types from Zod schemas
+type TRegister = z.infer<typeof registerValidateSchema>;
 
-type TLogin = {
-  identifier: string;
-  password: string;
-};
+type TLogin = z.infer<typeof loginValidateSchema>;
+type TActivation = z.infer<typeof activationValidateSchema>;
 
-const registerValidateSchema = Yup.object({
-  fullName: Yup.string().required(),
-  userName: Yup.string().required(),
-  email: Yup.string().required(),
-  password: Yup.string()
-    .required()
-    .min(8, "Password must be at least 8 characters")
-    .test(
-      "password-complexity",
-      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
-      (value) => {
-        if (!value) return false;
+const registerValidateSchema = z
+  .object({
+    fullName: z.string().min(1, "Full name is required"),
+    userName: z.string().min(1, "Username is required"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email({ message: "Invalid email format" }),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password not match",
+    path: ["confirmPassword"],
+  });
 
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(value);
-      }
-    ),
-  confirmPassword: Yup.string()
-    .required()
-    .oneOf([Yup.ref("password"), ""], "Password not match"),
+const loginValidateSchema = z.object({
+  identifier: z.string().min(1, "Identifier is required"),
+  password: z.string().min(1, "Password is required"),
+});
+
+const activationValidateSchema = z.object({
+  code: z.string().min(1, "Activation code is required"),
 });
 
 export default {
@@ -52,7 +55,7 @@ export default {
       req.body as unknown as TRegister;
 
     try {
-      await registerValidateSchema.validate({
+      const validatedData = registerValidateSchema.parse({
         fullName,
         userName,
         email,
@@ -61,10 +64,10 @@ export default {
       });
 
       const result = await UserModel.create({
-        fullName,
-        userName,
-        email,
-        password,
+        fullName: validatedData.fullName,
+        userName: validatedData.userName,
+        email: validatedData.email,
+        password: validatedData.password,
       });
 
       res.status(200).json({
@@ -72,11 +75,21 @@ export default {
         data: result,
       });
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      if (error instanceof z.ZodError) {
+        const errorMessage = error.issues
+          .map((err: any) => `${err.path.join(".")}: ${err.message}`)
+          .join(", ");
+        res.status(400).json({
+          message: errorMessage,
+          data: null,
+        });
+      } else {
+        const err = error as unknown as Error;
+        res.status(400).json({
+          message: err.message,
+          data: null,
+        });
+      }
     }
   },
 
@@ -88,9 +101,9 @@ export default {
         schema: {$ref: "#/components/schemas/LoginRequest"}
       }
      */
-    const { identifier, password } = req.body as unknown as TLogin;
-
     try {
+      const { identifier, password } = loginValidateSchema.parse(req.body);
+
       // get user data based on identifier -> email or username
       const userByIdentifier = await UserModel.findOne({
         $or: [{ email: identifier }, { userName: identifier }],
@@ -124,11 +137,21 @@ export default {
         data: token,
       });
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      if (error instanceof z.ZodError) {
+        const errorMessage = error.issues
+          .map((err: any) => `${err.path.join(".")}: ${err.message}`)
+          .join(", ");
+        res.status(400).json({
+          message: errorMessage,
+          data: null,
+        });
+      } else {
+        const err = error as unknown as Error;
+        res.status(400).json({
+          message: err.message,
+          data: null,
+        });
+      }
     }
   },
 
@@ -165,9 +188,7 @@ export default {
       }
      */
     try {
-      const { code } = req.body as {
-        code: string;
-      };
+      const { code } = activationValidateSchema.parse(req.body);
 
       const user = await UserModel.findOneAndUpdate(
         {
@@ -187,11 +208,21 @@ export default {
         data: user,
       });
     } catch (error) {
-      const err = error as unknown as Error;
-      res.status(400).json({
-        message: err.message,
-        data: null,
-      });
+      if (error instanceof z.ZodError) {
+        const errorMessage = error.issues
+          .map((err: any) => `${err.path.join(".")}: ${err.message}`)
+          .join(", ");
+        res.status(400).json({
+          message: errorMessage,
+          data: null,
+        });
+      } else {
+        const err = error as unknown as Error;
+        res.status(400).json({
+          message: err.message,
+          data: null,
+        });
+      }
     }
   },
 };
