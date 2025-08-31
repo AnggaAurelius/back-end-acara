@@ -80,12 +80,14 @@ export default {
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
         res.status(400).json({
+          success: true,
           message: errorMessage,
           data: null,
         });
       } else {
         const err = error as unknown as Error;
         res.status(400).json({
+          success: false,
           message: err.message,
           data: null,
         });
@@ -122,6 +124,7 @@ export default {
 
       if (!isValidPassword) {
         return res.status(403).json({
+          success: false,
           message: "User not found",
           data: null,
         });
@@ -133,6 +136,7 @@ export default {
       });
 
       res.status(200).json({
+        success: true,
         message: "Success Login",
         data: token,
       });
@@ -142,12 +146,14 @@ export default {
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
         res.status(400).json({
+          success: false,
           message: errorMessage,
           data: null,
         });
       } else {
         const err = error as unknown as Error;
         res.status(400).json({
+          success: false,
           message: err.message,
           data: null,
         });
@@ -167,12 +173,14 @@ export default {
       const result = await UserModel.findById(user?.id);
 
       res.status(200).json({
+        success: true,
         message: "Success get user profile",
         data: result,
       });
     } catch (error) {
       const err = error as unknown as Error;
       res.status(400).json({
+        success: false,
         message: err.message,
         data: null,
       });
@@ -188,7 +196,7 @@ export default {
       }
      */
     try {
-      const { code } = activationValidateSchema.parse(req.query);
+      const { code } = activationValidateSchema.parse(req.body);
       const user = await UserModel.findOneAndUpdate(
         {
           activeCode: code,
@@ -203,6 +211,7 @@ export default {
       );
 
       res.status(200).json({
+        success: true,
         message: "Success activation",
         data: user,
       });
@@ -212,12 +221,14 @@ export default {
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
         res.status(400).json({
+          success: false,
           message: errorMessage,
           data: null,
         });
       } else {
         const err = error as unknown as Error;
         res.status(400).json({
+          success: false,
           message: err.message,
           data: null,
         });
