@@ -5,6 +5,7 @@ import cors from "cors";
 
 import db from "./utils/database";
 import docs from "./docs/route";
+import ResponseUtil from "./utils/response";
 const PORT = 3000;
 
 async function init() {
@@ -18,10 +19,7 @@ async function init() {
     app.use(bodyParser.json());
 
     app.get("/", (req, res) => {
-      res.status(200).json({
-        message: "Server is running",
-        data: null,
-      });
+      ResponseUtil.success(res, 200, "Server is running");
     });
 
     docs(app);

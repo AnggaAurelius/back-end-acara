@@ -4,6 +4,7 @@ import UserModel from "../models/user.model";
 import { encrypt } from "../utils/encryption";
 import { generateToken } from "../utils/jwt";
 import { IReqUser } from "../middlewares/auth.middleware";
+import ResponseUtil from "../utils/response";
 
 // Infer types from Zod schemas
 type TRegister = z.infer<typeof registerValidateSchema>;
@@ -70,27 +71,16 @@ export default {
         password: validatedData.password,
       });
 
-      res.status(200).json({
-        message: "Succes Registration",
-        data: result,
-      });
+      return ResponseUtil.success(res, 200, "Success Registration", result);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessage = error.issues
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
-        res.status(400).json({
-          success: true,
-          message: errorMessage,
-          data: null,
-        });
+        return ResponseUtil.validationError(res, errorMessage);
       } else {
         const err = error as unknown as Error;
-        res.status(400).json({
-          success: false,
-          message: err.message,
-          data: null,
-        });
+        return ResponseUtil.error(res, 400, err.message);
       }
     }
   },
@@ -113,21 +103,14 @@ export default {
       });
 
       if (!userByIdentifier) {
-        return res.status(403).json({
-          message: "User not found",
-          data: null,
-        });
+        return ResponseUtil.forbidden(res, "User not found");
       }
 
       const isValidPassword: boolean =
         encrypt(password) === userByIdentifier.password;
 
       if (!isValidPassword) {
-        return res.status(403).json({
-          success: false,
-          message: "User not found",
-          data: null,
-        });
+        return ResponseUtil.forbidden(res, "Invalid credentials");
       }
 
       const token = generateToken({
@@ -135,28 +118,16 @@ export default {
         role: userByIdentifier.role,
       });
 
-      res.status(200).json({
-        success: true,
-        message: "Success Login",
-        data: token,
-      });
+      return ResponseUtil.success(res, 200, "Success Login", token);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessage = error.issues
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
-        res.status(400).json({
-          success: false,
-          message: errorMessage,
-          data: null,
-        });
+        return ResponseUtil.validationError(res, errorMessage);
       } else {
         const err = error as unknown as Error;
-        res.status(400).json({
-          success: false,
-          message: err.message,
-          data: null,
-        });
+        return ResponseUtil.error(res, 400, err.message);
       }
     }
   },
@@ -172,18 +143,10 @@ export default {
       const user = req.user;
       const result = await UserModel.findById(user?.id);
 
-      res.status(200).json({
-        success: true,
-        message: "Success get user profile",
-        data: result,
-      });
+      return ResponseUtil.success(res, 200, "Success get user profile", result);
     } catch (error) {
       const err = error as unknown as Error;
-      res.status(400).json({
-        success: false,
-        message: err.message,
-        data: null,
-      });
+      return ResponseUtil.error(res, 400, err.message);
     }
   },
 
@@ -210,28 +173,16 @@ export default {
         }
       );
 
-      res.status(200).json({
-        success: true,
-        message: "Success activation",
-        data: user,
-      });
+      return ResponseUtil.success(res, 200, "Success activation", user);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const errorMessage = error.issues
           .map((err: any) => `${err.path.join(".")}: ${err.message}`)
           .join(", ");
-        res.status(400).json({
-          success: false,
-          message: errorMessage,
-          data: null,
-        });
+        return ResponseUtil.validationError(res, errorMessage);
       } else {
         const err = error as unknown as Error;
-        res.status(400).json({
-          success: false,
-          message: err.message,
-          data: null,
-        });
+        return ResponseUtil.error(res, 400, err.message);
       }
     }
   },
