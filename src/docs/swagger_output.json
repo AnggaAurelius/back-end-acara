@@ -17,12 +17,12 @@
   ],
   "tags": [
     {
-      "name": "Auth",
-      "description": "Legacy authentication endpoints (deprecated)"
-    },
-    {
       "name": "Better-Auth",
       "description": "Better-Auth authentication endpoints"
+    },
+    {
+      "name": "Protected",
+      "description": "Protected routes requiring authentication"
     }
   ],
   "paths": {
@@ -339,33 +339,6 @@
                   }
                 }
               },
-              "role": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "enum": {
-                    "type": "array",
-                    "example": [
-                      "user",
-                      "admin"
-                    ],
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "User role"
-                  },
-                  "example": {
-                    "type": "string",
-                    "example": "user"
-                  }
-                }
-              },
               "profilePicture": {
                 "type": "object",
                 "properties": {
@@ -397,54 +370,6 @@
                   "example": {
                     "type": "boolean",
                     "example": true
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "UpdateProfileRequest": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "object"
-          },
-          "properties": {
-            "type": "object",
-            "properties": {
-              "fullName": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Updated full name"
-                  },
-                  "example": {
-                    "type": "string",
-                    "example": "John Updated Doe"
-                  }
-                }
-              },
-              "profilePicture": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "example": "string"
-                  },
-                  "description": {
-                    "type": "string",
-                    "example": "Updated profile picture filename"
-                  },
-                  "example": {
-                    "type": "string",
-                    "example": "new-avatar.jpg"
                   }
                 }
               }

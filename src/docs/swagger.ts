@@ -6,7 +6,7 @@ const doc = {
   info: {
     version: "v1.0.0",
     title: "Event Management API",
-    description: "API documentation for Event Management System with Better-Auth integration (legacy JWT endpoints removed)",
+    description: "API documentation for Event Management System with Better-Auth integration",
   },
   servers: [
     {
@@ -109,12 +109,6 @@ const doc = {
             description: "Username",
             example: "johndoe",
           },
-          role: {
-            type: "string",
-            enum: ["user", "admin"],
-            description: "User role",
-            example: "user",
-          },
           profilePicture: {
             type: "string",
             description: "Profile picture filename",
@@ -124,21 +118,6 @@ const doc = {
             type: "boolean",
             description: "Email verification status",
             example: true,
-          },
-        },
-      },
-      UpdateProfileRequest: {
-        type: "object",
-        properties: {
-          fullName: {
-            type: "string",
-            description: "Updated full name",
-            example: "John Updated Doe",
-          },
-          profilePicture: {
-            type: "string",
-            description: "Updated profile picture filename",
-            example: "new-avatar.jpg",
           },
         },
       },
@@ -185,18 +164,9 @@ const doc = {
   },
   tags: [
     {
-      name: "Auth",
-      description: "Legacy authentication endpoints (deprecated)",
-    },
-    {
       name: "Better-Auth",
       description: "Better-Auth authentication endpoints",
     },
-    {
-      name: "Protected",
-      description: "Protected routes requiring authentication",
-    },
-    
   ],
 };
 
