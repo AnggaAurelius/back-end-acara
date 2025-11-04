@@ -69,11 +69,6 @@ export const auth = betterAuth({
         type: "string",
         defaultValue: "user.jpg",
       },
-      isActive: {
-        type: "boolean",
-        defaultValue: false, // Start as inactive, activate via email
-        input: false, // Don't allow setting via API
-      },
     },
   },
   

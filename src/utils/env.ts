@@ -14,7 +14,7 @@ export const EMAIL_SMTP_HOST: string = process.env.EMAIL_SMTP_HOST || "";
 export const EMAIL_SMTP_SERVICE_NAME: string =
   process.env.EMAIL_SMTP_SERVICE_NAME || "";
 export const CLIENT_HOST: string =
-  process.env.CLIENT_HOST || "Http://localhost:3001";
+  process.env.CLIENT_HOST || "http://localhost:3001";
 
 // Better-Auth environment variables
 export const BETTER_AUTH_SECRET: string =
