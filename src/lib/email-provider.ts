@@ -11,7 +11,7 @@ import {
 } from "../utils/env";
 
 // Create transporter using your existing email configuration
-export const createTransporter = () => {
+const createTransporter = () => {
   return nodemailer.createTransport({
     service: EMAIL_SMTP_SERVICE_NAME,
     host: EMAIL_SMTP_HOST,
@@ -27,17 +27,17 @@ export const createTransporter = () => {
 
 // Email provider for better-auth
 export const emailProvider = {
-  async sendEmail({ 
-    to, 
-    subject, 
-    html 
-  }: { 
-    to: string; 
-    subject: string; 
-    html: string; 
+  async sendEmail({
+    to,
+    subject,
+    html,
+  }: {
+    to: string;
+    subject: string;
+    html: string;
   }) {
     const transporter = createTransporter();
-    
+
     try {
       const result = await transporter.sendMail({
         from: EMAIL_SMTP_USER,
@@ -45,7 +45,7 @@ export const emailProvider = {
         subject,
         html,
       });
-      
+
       console.log("✅ Email sent successfully to:", to);
       return result;
     } catch (error) {
@@ -56,19 +56,19 @@ export const emailProvider = {
 };
 
 // Template rendering function (reusing your existing approach)
-export const renderEmailTemplate = async (
-  templateName: string, 
+const renderEmailTemplate = async (
+  templateName: string,
   data: Record<string, any>
 ): Promise<string> => {
   const templatePath = path.join(
-    process.cwd(), 
-    "src", 
-    "utils", 
-    "mail", 
-    "templates", 
+    process.cwd(),
+    "src",
+    "utils",
+    "mail",
+    "templates",
     templateName
   );
-  
+
   try {
     const html = await ejs.renderFile(templatePath, data);
     return html;

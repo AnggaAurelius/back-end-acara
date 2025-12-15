@@ -54,20 +54,6 @@ export class ResponseUtil {
   }
 
   /**
-   * Send a validation error response (400 Bad Request)
-   * @param res - Express Response object
-   * @param message - Validation error message
-   * @param data - Validation error details (optional)
-   */
-  static validationError<T>(
-    res: Response,
-    message: string,
-    data: T | null = null
-  ): Response<ApiResponse<T>> {
-    return ResponseUtil.error(res, 400, message, data);
-  }
-
-  /**
    * Send an unauthorized error response (401 Unauthorized)
    * @param res - Express Response object
    * @param message - Unauthorized message (default: "Unauthorized")
@@ -80,87 +66,6 @@ export class ResponseUtil {
   ): Response<ApiResponse<T>> {
     return ResponseUtil.error(res, 401, message, data);
   }
-
-  /**
-   * Send a forbidden error response (403 Forbidden)
-   * @param res - Express Response object
-   * @param message - Forbidden message (default: "Forbidden")
-   * @param data - Additional data (optional)
-   */
-  static forbidden<T>(
-    res: Response,
-    message: string = "Forbidden",
-    data: T | null = null
-  ): Response<ApiResponse<T>> {
-    return ResponseUtil.error(res, 403, message, data);
-  }
-
-  /**
-   * Send a not found error response (404 Not Found)
-   * @param res - Express Response object
-   * @param message - Not found message (default: "Not Found")
-   * @param data - Additional data (optional)
-   */
-  static notFound<T>(
-    res: Response,
-    message: string = "Not Found",
-    data: T | null = null
-  ): Response<ApiResponse<T>> {
-    return ResponseUtil.error(res, 404, message, data);
-  }
-
-  /**
-   * Send an internal server error response (500 Internal Server Error)
-   * @param res - Express Response object
-   * @param message - Error message (default: "Internal Server Error")
-   * @param data - Additional error data (optional)
-   */
-  static internalError<T>(
-    res: Response,
-    message: string = "Internal Server Error",
-    data: T | null = null
-  ): Response<ApiResponse<T>> {
-    return ResponseUtil.error(res, 500, message, data);
-  }
 }
-
-/**
- * Convenience functions for common response patterns
- */
-
-/**
- * Send a success response
- */
-export const sendSuccess = ResponseUtil.success;
-
-/**
- * Send an error response
- */
-export const sendError = ResponseUtil.error;
-
-/**
- * Send a validation error response
- */
-export const sendValidationError = ResponseUtil.validationError;
-
-/**
- * Send an unauthorized response
- */
-export const sendUnauthorized = ResponseUtil.unauthorized;
-
-/**
- * Send a forbidden response
- */
-export const sendForbidden = ResponseUtil.forbidden;
-
-/**
- * Send a not found response
- */
-export const sendNotFound = ResponseUtil.notFound;
-
-/**
- * Send an internal server error response
- */
-export const sendInternalError = ResponseUtil.internalError;
 
 export default ResponseUtil;

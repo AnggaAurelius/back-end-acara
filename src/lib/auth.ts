@@ -124,16 +124,3 @@ export const auth = betterAuth({
 
 // Export types for TypeScript
 export type Session = typeof auth.$Infer.Session;
-
-// Export the auth handler for Express routes
-export const authHandler = auth.handler;
-
-// Export API methods for programmatic access
-export const {
-  signUpEmail,
-  signInEmail,
-  signOut,
-  getSession,
-  verifyEmail,
-  sendVerificationEmail,
-} = auth.api;

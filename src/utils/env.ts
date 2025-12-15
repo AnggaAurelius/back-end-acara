@@ -22,6 +22,5 @@ export const BETTER_AUTH_SECRET: string =
 export const BETTER_AUTH_URL: string =
   process.env.BETTER_AUTH_URL || "http://localhost:3000";
 export const BETTER_AUTH_TRUSTED_ORIGINS: string =
-  process.env.BETTER_AUTH_TRUSTED_ORIGINS || "http://localhost:3000,http://localhost:3001";
-export const BETTER_AUTH_EMAIL_FROM: string =
-  process.env.BETTER_AUTH_EMAIL_FROM || EMAIL_SMTP_USER;
+  process.env.BETTER_AUTH_TRUSTED_ORIGINS ||
+  "http://localhost:3000,http://localhost:3001";
