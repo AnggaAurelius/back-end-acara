@@ -10,12 +10,15 @@ const db = client.db("db-acara");
 
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
-    client // Enable database transactions
+    client, // Enable database transactions
   }),
 
   // Base URL and trusted origins (moved to top for better precedence)
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
-  trustedOrigins: (process.env.BETTER_AUTH_TRUSTED_ORIGINS || "http://localhost:3000,http://localhost:3001").split(","),
+  trustedOrigins: (
+    process.env.BETTER_AUTH_TRUSTED_ORIGINS ||
+    "http://localhost:3000,http://localhost:3001"
+  ).split(","),
 
   // Secret for signing tokens
   secret: process.env.BETTER_AUTH_SECRET || process.env.SECRET,
@@ -24,15 +27,16 @@ export const auth = betterAuth({
   rateLimit: {
     enabled: false, // Disable rate limiting for now to avoid issues
   },
-  
+
   // Email and password authentication
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
-    autoSignInAfterVerification: true,
     sendResetPassword: async ({ user, url }) => {
       // Cast user to include custom fields
-      const extendedUser = user as typeof user & { userName?: string; fullName?: string };
+      const extendedUser = user as typeof user & {
+        userName?: string;
+        fullName?: string;
+      };
 
       const html = await emailTemplates.passwordResetEmail({
         userName: extendedUser.userName || user.name,
@@ -47,7 +51,7 @@ export const auth = betterAuth({
       });
     },
   },
-  
+
   // Custom user fields to match your existing schema
   user: {
     additionalFields: {
@@ -71,7 +75,7 @@ export const auth = betterAuth({
       },
     },
   },
-  
+
   // Email verification configuration
   emailVerification: {
     enabled: true,
@@ -79,7 +83,10 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
       // Cast user to include custom fields
-      const extendedUser = user as typeof user & { userName?: string; fullName?: string };
+      const extendedUser = user as typeof user & {
+        userName?: string;
+        fullName?: string;
+      };
 
       const html = await emailTemplates.verificationEmail({
         userName: extendedUser.userName || user.name,
@@ -95,7 +102,7 @@ export const auth = betterAuth({
       });
     },
   },
-  
+
   // Session configuration
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 days (vs your current 1 hour)
@@ -105,7 +112,7 @@ export const auth = betterAuth({
       maxAge: 60 * 5, // 5 minutes cache
     },
   },
-  
+
   // Security settings
   advanced: {
     generateId: false, // Use MongoDB ObjectId
@@ -113,8 +120,6 @@ export const auth = betterAuth({
       enabled: false, // Set to true if using subdomains
     },
   },
-  
-
 });
 
 // Export types for TypeScript
