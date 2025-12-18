@@ -27,6 +27,7 @@
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.19.2",
+    "express-rate-limit": "^8.2.1",
     "mongodb": "^6.20.0",
     "mongoose": "^8.9.2",
     "nodemailer": "^6.9.14",
@@ -38,6 +39,7 @@
     "zod": "^4.1.0"
   },
   "devDependencies": {
-    "@types/ejs": "^3.1.5"
+    "@types/ejs": "^3.1.5",
+    "@types/express-rate-limit": "^6.0.2"
   }
 }
