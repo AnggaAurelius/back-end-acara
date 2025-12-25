@@ -34,13 +34,33 @@ const envSchema = z.object({
   BETTER_AUTH_SECRET: z
     .string()
     .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
-  BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
+  BETTER_AUTH_URL: z
+    .string()
+    .min(1, "BETTER_AUTH_URL is required")
+    .refine((url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "BETTER_AUTH_URL must be a valid URL"),
   BETTER_AUTH_TRUSTED_ORIGINS: z
     .string()
     .min(1, "BETTER_AUTH_TRUSTED_ORIGINS is required"),
 
   // Client
-  CLIENT_HOST: z.string().url("CLIENT_HOST must be a valid URL"),
+  CLIENT_HOST: z
+    .string()
+    .min(1, "CLIENT_HOST is required")
+    .refine((url) => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    }, "CLIENT_HOST must be a valid URL"),
 
   // Optional
   NODE_ENV: z.enum(["development", "production", "test"]).optional(),
