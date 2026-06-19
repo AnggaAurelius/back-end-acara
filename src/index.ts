@@ -35,10 +35,8 @@ app.use(
     credentials: true, // Important for better-auth cookies
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-  })
+  }),
 );
-
-app.use(bodyParser.json());
 
 // Apply rate limiting to all routes
 app.use(apiLimiter);
@@ -62,7 +60,11 @@ app.get("/", (req, res) => {
 docs(app);
 
 // Your API routes (includes better-auth routes)
+// Better-Auth needs the raw request body, so mount before bodyParser.json()
 app.use("/api", router);
+
+// Body parser for non-auth routes (must come after the better-auth handler)
+app.use(bodyParser.json());
 
 // 404 handler - must be after all routes
 app.use((req, res, _next) => {
@@ -78,7 +80,7 @@ app.use(
     err: any,
     _req: express.Request,
     res: express.Response,
-    _next: express.NextFunction
+    _next: express.NextFunction,
   ) => {
     console.error("❌ Unhandled error:", err);
 
@@ -90,7 +92,7 @@ app.use(
     const errorData = IS_PRODUCTION ? null : { stack: err.stack, details: err };
 
     ResponseUtil.error(res, err.statusCode || 500, errorMessage, errorData);
-  }
+  },
 );
 
 // For local development

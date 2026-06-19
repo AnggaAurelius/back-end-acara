@@ -9,7 +9,7 @@ const envSchema = z.object({
     .min(1, "DATABASE_URL is required")
     .refine(
       (url) => url.startsWith("mongodb://") || url.startsWith("mongodb+srv://"),
-      "DATABASE_URL must be a valid MongoDB connection string"
+      "DATABASE_URL must be a valid MongoDB connection string",
     ),
   SECRET: z
     .string()
@@ -74,16 +74,13 @@ function validateEnv() {
     return parsed;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("❌ Invalid environment variables:");
-      error.issues.forEach((err: z.ZodIssue) => {
-        console.error(`  - ${err.path.join(".")}: ${err.message}`);
-      });
-      console.error(
-        "\n💡 Please check your .env file and ensure all required variables are set."
-      );
-      console.error("📄 Refer to .env.example for the required format.\n");
+      const details = error.issues
+        .map((err: z.ZodIssue) => `  - ${err.path.join(".")}: ${err.message}`)
+        .join("\n");
+      console.error("❌ Invalid environment variables:\n" + details);
+      throw new Error("Invalid environment variables:\n" + details);
     }
-    process.exit(1);
+    throw error;
   }
 }
 
