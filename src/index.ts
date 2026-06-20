@@ -13,7 +13,7 @@ import { apiLimiter } from "./middlewares/rate-limit.middleware";
 const app = express();
 const PORT = 3000;
 
-// Initialize database connection
+// Initialize database connection (with lazy loading and reuse)
 let dbInitialized = false;
 async function initDatabase() {
   if (!dbInitialized) {
@@ -47,7 +47,14 @@ app.use(async (_req, res, next) => {
     await initDatabase();
     next();
   } catch (error) {
-    res.status(500).json({ error: "Database initialization failed" });
+    console.error("Database initialization error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Database initialization failed",
+      message: IS_PRODUCTION
+        ? "Service temporarily unavailable"
+        : String(error),
+    });
   }
 });
 
@@ -95,8 +102,8 @@ app.use(
   },
 );
 
-// For local development
-if (!IS_PRODUCTION) {
+// For local development only
+if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
@@ -105,5 +112,5 @@ if (!IS_PRODUCTION) {
   });
 }
 
-// Export for Vercel serverless
+// Export for Vercel serverless - this is the critical part!
 export default app;

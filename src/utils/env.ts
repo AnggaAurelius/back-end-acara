@@ -84,27 +84,34 @@ function validateEnv() {
   }
 }
 
-// Validate on module load
-const env = validateEnv();
+// Don't validate on module load - do it lazily on first access
+let env: z.infer<typeof envSchema> | null = null;
 
-// Export validated and typed environment variables
-export const DATABASE_URL: string = env.DATABASE_URL;
-export const SECRET: string = env.SECRET;
-export const EMAIL_SMTP_SECURE: boolean = env.EMAIL_SMTP_SECURE || false;
-export const EMAIL_SMTP_PASS: string = env.EMAIL_SMTP_PASS;
-export const EMAIL_SMTP_USER: string = env.EMAIL_SMTP_USER;
-export const EMAIL_SMTP_PORT: number = parseInt(env.EMAIL_SMTP_PORT, 10);
-export const EMAIL_SMTP_HOST: string = env.EMAIL_SMTP_HOST;
-export const EMAIL_SMTP_SERVICE_NAME: string = env.EMAIL_SMTP_SERVICE_NAME;
-export const CLIENT_HOST: string = env.CLIENT_HOST;
+function getEnv() {
+  if (!env) {
+    env = validateEnv();
+  }
+  return env;
+}
+
+// Export validated and typed environment variables (lazy loaded)
+export const DATABASE_URL: string = getEnv().DATABASE_URL;
+export const SECRET: string = getEnv().SECRET;
+export const EMAIL_SMTP_SECURE: boolean = getEnv().EMAIL_SMTP_SECURE || false;
+export const EMAIL_SMTP_PASS: string = getEnv().EMAIL_SMTP_PASS;
+export const EMAIL_SMTP_USER: string = getEnv().EMAIL_SMTP_USER;
+export const EMAIL_SMTP_PORT: number = parseInt(getEnv().EMAIL_SMTP_PORT, 10);
+export const EMAIL_SMTP_HOST: string = getEnv().EMAIL_SMTP_HOST;
+export const EMAIL_SMTP_SERVICE_NAME: string = getEnv().EMAIL_SMTP_SERVICE_NAME;
+export const CLIENT_HOST: string = getEnv().CLIENT_HOST;
 
 // Better-Auth environment variables
-export const BETTER_AUTH_SECRET: string = env.BETTER_AUTH_SECRET;
-export const BETTER_AUTH_URL: string = env.BETTER_AUTH_URL;
+export const BETTER_AUTH_SECRET: string = getEnv().BETTER_AUTH_SECRET;
+export const BETTER_AUTH_URL: string = getEnv().BETTER_AUTH_URL;
 export const BETTER_AUTH_TRUSTED_ORIGINS: string =
-  env.BETTER_AUTH_TRUSTED_ORIGINS;
+  getEnv().BETTER_AUTH_TRUSTED_ORIGINS;
 
 // Node environment
-export const NODE_ENV: string = env.NODE_ENV || "development";
+export const NODE_ENV: string = getEnv().NODE_ENV || "development";
 export const IS_PRODUCTION: boolean = NODE_ENV === "production";
 export const IS_DEVELOPMENT: boolean = NODE_ENV === "development";

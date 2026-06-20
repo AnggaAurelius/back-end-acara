@@ -2,34 +2,66 @@ import mongoose from "mongoose";
 import { MongoClient } from "mongodb";
 import { DATABASE_URL } from "../utils/env";
 
-// MongoDB client for better-auth (separate from Mongoose)
-const mongoClient = new MongoClient(DATABASE_URL);
+// Lazy initialization for serverless
+let mongoClient: MongoClient | null = null;
+let isMongooseConnected = false;
+let isMongoClientConnected = false;
 
-// Keep your existing Mongoose connection function
+// Keep your existing Mongoose connection function (with reuse logic)
 export const connectMongoose = async () => {
   try {
+    // Reuse existing connection in serverless environment
+    if (isMongooseConnected && mongoose.connection.readyState === 1) {
+      console.log("♻️ Reusing existing Mongoose connection");
+      return Promise.resolve("Mongoose connected (reused)");
+    }
+
     await mongoose.connect(DATABASE_URL, {
       dbName: "db-acara",
+      // Serverless optimizations
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 10000,
     });
+
+    isMongooseConnected = true;
     return Promise.resolve("Mongoose connected");
   } catch (error) {
-    await mongoose.disconnect();
+    isMongooseConnected = false;
+    console.error("Mongoose connection error:", error);
     return Promise.reject(error);
   }
 };
 
-// Initialize MongoDB client for better-auth
+// Initialize MongoDB client for better-auth (with reuse logic)
 export const connectMongoDB = async () => {
   try {
+    // Lazy instantiation
+    if (!mongoClient) {
+      mongoClient = new MongoClient(DATABASE_URL, {
+        maxPoolSize: 10,
+        minPoolSize: 1,
+      });
+    }
+
+    // Reuse existing connection
+    if (isMongoClientConnected) {
+      console.log("♻️ Reusing existing MongoDB client connection");
+      return Promise.resolve("MongoDB client connected (reused)");
+    }
+
     await mongoClient.connect();
+    isMongoClientConnected = true;
     return Promise.resolve("MongoDB client connected");
   } catch (error) {
-    await mongoClient.close();
+    isMongoClientConnected = false;
+    console.error("MongoDB client connection error:", error);
     return Promise.reject(error);
   }
 };
 
-// Combined connection function
+// Combined connection function with reuse
 export const connectDatabases = async () => {
   try {
     const [mongooseResult, mongoClientResult] = await Promise.all([
