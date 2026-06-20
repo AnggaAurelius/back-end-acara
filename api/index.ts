@@ -1,8 +1,8 @@
 // Vercel serverless entry point
-// Note: Vercel uses Node.js runtime, not Bun
-// This file imports your Express app and exports it for Vercel
+// Note: In ES modules, you MUST include .js extension in imports
+// TypeScript files compile to .js, so we import .js even though source is .ts
 
-import app from "../src/index";
+import app from "../src/index.js";
 
 // Export as default for Vercel serverless
 export default app;
