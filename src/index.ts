@@ -56,7 +56,9 @@ app.use((req, res, next) => {
       return res.status(500).json({
         success: false,
         error: "Server configuration error",
-        message: IS_PRODUCTION ? "Service unavailable" : result.error,
+        message: "Missing or invalid environment variables",
+        details: result.error, // Always show details so we can debug
+        hint: "Check Vercel Dashboard → Settings → Environment Variables",
       });
     }
     envValidated = true;
