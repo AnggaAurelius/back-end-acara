@@ -4,7 +4,12 @@ import bodyParser from "body-parser";
 import cors from "cors";
 
 // Import env first to validate environment variables on startup
-import { CLIENT_HOST, BETTER_AUTH_URL, IS_PRODUCTION } from "./utils/env";
+import {
+  CLIENT_HOST,
+  BETTER_AUTH_URL,
+  IS_PRODUCTION,
+  validateEnv,
+} from "./utils/env";
 import connectDatabases from "./lib/database";
 import docs from "./docs/route";
 import ResponseUtil from "./utils/response";
@@ -40,6 +45,25 @@ app.use(
 
 // Apply rate limiting to all routes
 app.use(apiLimiter);
+
+// Validate environment variables on first request
+let envValidated = false;
+app.use((req, res, next) => {
+  if (!envValidated) {
+    const result = validateEnv();
+    if (!result.success) {
+      console.error("Environment validation failed:", result.error);
+      return res.status(500).json({
+        success: false,
+        error: "Server configuration error",
+        message: IS_PRODUCTION ? "Service unavailable" : result.error,
+      });
+    }
+    envValidated = true;
+    console.log("✅ Environment validated");
+  }
+  next();
+});
 
 // Initialize database on first request
 app.use(async (_req, res, next) => {

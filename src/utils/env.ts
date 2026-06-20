@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { z } from "zod";
 
+// Load .env file (only works locally, Vercel injects env vars directly)
 dotenv.config();
 
 const envSchema = z.object({
@@ -66,52 +67,44 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).optional(),
 });
 
-// Validate environment variables
-function validateEnv() {
+// Validate environment variables (returns validation result instead of throwing)
+export function validateEnv() {
   try {
     const parsed = envSchema.parse(process.env);
     console.log("✅ Environment variables validated successfully");
-    return parsed;
+    return { success: true, data: parsed, error: null };
   } catch (error) {
     if (error instanceof z.ZodError) {
       const details = error.issues
-        .map((err: z.ZodIssue) => `  - ${err.path.join(".")}: ${err.message}`)
+        .map((err) => `  - ${err.path.join(".")}: ${err.message}`)
         .join("\n");
       console.error("❌ Invalid environment variables:\n" + details);
-      throw new Error("Invalid environment variables:\n" + details);
+      return { success: false, data: null, error: details };
     }
-    throw error;
+    return { success: false, data: null, error: String(error) };
   }
 }
 
-// Don't validate on module load - do it lazily on first access
-let env: z.infer<typeof envSchema> | null = null;
-
-function getEnv() {
-  if (!env) {
-    env = validateEnv();
-  }
-  return env;
-}
-
-// Export validated and typed environment variables (lazy loaded)
-export const DATABASE_URL: string = getEnv().DATABASE_URL;
-export const SECRET: string = getEnv().SECRET;
-export const EMAIL_SMTP_SECURE: boolean = getEnv().EMAIL_SMTP_SECURE || false;
-export const EMAIL_SMTP_PASS: string = getEnv().EMAIL_SMTP_PASS;
-export const EMAIL_SMTP_USER: string = getEnv().EMAIL_SMTP_USER;
-export const EMAIL_SMTP_PORT: number = parseInt(getEnv().EMAIL_SMTP_PORT, 10);
-export const EMAIL_SMTP_HOST: string = getEnv().EMAIL_SMTP_HOST;
-export const EMAIL_SMTP_SERVICE_NAME: string = getEnv().EMAIL_SMTP_SERVICE_NAME;
-export const CLIENT_HOST: string = getEnv().CLIENT_HOST;
-
-// Better-Auth environment variables
-export const BETTER_AUTH_SECRET: string = getEnv().BETTER_AUTH_SECRET;
-export const BETTER_AUTH_URL: string = getEnv().BETTER_AUTH_URL;
+// Direct access to process.env without validation at module load
+// Validation happens in middleware instead
+export const DATABASE_URL: string = process.env.DATABASE_URL || "";
+export const SECRET: string = process.env.SECRET || "";
+export const EMAIL_SMTP_SECURE: boolean =
+  process.env.EMAIL_SMTP_SECURE === "true";
+export const EMAIL_SMTP_PASS: string = process.env.EMAIL_SMTP_PASS || "";
+export const EMAIL_SMTP_USER: string = process.env.EMAIL_SMTP_USER || "";
+export const EMAIL_SMTP_PORT: number = parseInt(
+  process.env.EMAIL_SMTP_PORT || "465",
+  10,
+);
+export const EMAIL_SMTP_HOST: string = process.env.EMAIL_SMTP_HOST || "";
+export const EMAIL_SMTP_SERVICE_NAME: string =
+  process.env.EMAIL_SMTP_SERVICE_NAME || "";
+export const CLIENT_HOST: string = process.env.CLIENT_HOST || "";
+export const BETTER_AUTH_SECRET: string = process.env.BETTER_AUTH_SECRET || "";
+export const BETTER_AUTH_URL: string = process.env.BETTER_AUTH_URL || "";
 export const BETTER_AUTH_TRUSTED_ORIGINS: string =
-  getEnv().BETTER_AUTH_TRUSTED_ORIGINS;
-
-// Node environment
-export const NODE_ENV: string = getEnv().NODE_ENV || "development";
+  process.env.BETTER_AUTH_TRUSTED_ORIGINS || "";
+export const NODE_ENV: string = process.env.NODE_ENV || "development";
 export const IS_PRODUCTION: boolean = NODE_ENV === "production";
 export const IS_DEVELOPMENT: boolean = NODE_ENV === "development";
