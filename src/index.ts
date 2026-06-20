@@ -1,5 +1,5 @@
 import express from "express";
-import router from "./routes/api";
+import router from "./routes/api.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
@@ -9,11 +9,11 @@ import {
   BETTER_AUTH_URL,
   IS_PRODUCTION,
   validateEnv,
-} from "./utils/env";
-import connectDatabases from "./lib/database";
-import docs from "./docs/route";
-import ResponseUtil from "./utils/response";
-import { apiLimiter } from "./middlewares/rate-limit.middleware";
+} from "./utils/env.js";
+import connectDatabases from "./lib/database.js";
+import docs from "./docs/route.js";
+import ResponseUtil from "./utils/response.js";
+import { apiLimiter } from "./middlewares/rate-limit.middleware.js";
 
 const app = express();
 const PORT = 3000;

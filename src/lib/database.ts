@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { MongoClient } from "mongodb";
-import { DATABASE_URL } from "../utils/env";
+import { DATABASE_URL } from "../utils/env.js";
 
 // Lazy initialization for serverless
 let mongoClient: MongoClient | null = null;

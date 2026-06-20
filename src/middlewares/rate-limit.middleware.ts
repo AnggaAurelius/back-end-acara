@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { IS_PRODUCTION } from "../utils/env";
+import { IS_PRODUCTION } from "../utils/env.js";
 
 /**
  * General API rate limiter

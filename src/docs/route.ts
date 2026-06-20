@@ -1,17 +1,17 @@
 import { Express } from "express";
 import swaggerUi from "swagger-ui-express";
-import swaggerOutput from "./swagger_output.json";
+import swaggerOutput from "./swagger_output.json" with { type: "json" };
 import fs from "fs";
 import path from "path";
-import { docsLimiter } from "../middlewares/rate-limit.middleware";
+import { docsLimiter } from "../middlewares/rate-limit.middleware.js";
 
 export default function docs(app: Express) {
   const css = fs.readFileSync(
     path.resolve(
       __dirname,
-      "../../node_modules/swagger-ui-dist/swagger-ui.css"
+      "../../node_modules/swagger-ui-dist/swagger-ui.css",
     ),
-    "utf-8"
+    "utf-8",
   );
 
   app.use(
@@ -20,6 +20,6 @@ export default function docs(app: Express) {
     swaggerUi.serve,
     swaggerUi.setup(swaggerOutput, {
       customCss: css,
-    })
+    }),
   );
 }

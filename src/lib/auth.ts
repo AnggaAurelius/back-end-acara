@@ -1,8 +1,8 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
-import { DATABASE_URL } from "../utils/env";
-import { emailProvider, emailTemplates } from "./email-provider";
+import { DATABASE_URL } from "../utils/env.js";
+import { emailProvider, emailTemplates } from "./email-provider.js";
 
 // Lazy initialization for serverless compatibility
 let client: MongoClient | null = null;
@@ -15,7 +15,7 @@ function getMongoClient() {
   return client;
 }
 
-function getAuth() {
+function initAuth() {
   if (authInstance) {
     return authInstance;
   }
@@ -135,17 +135,14 @@ function getAuth() {
         enabled: false, // Set to true if using subdomains
       },
     },
-  });
+  }) as any; // Type assertion to bypass complex type inference issues
 
   return authInstance;
 }
 
-// Export the getter function but also provide a proxy for easier migration
-export const auth = new Proxy({} as ReturnType<typeof betterAuth>, {
-  get(_target, prop) {
-    return getAuth()[prop as keyof ReturnType<typeof betterAuth>];
-  },
-});
+// Initialize on first import (will be reused in serverless warm starts)
+// Using non-null assertion since initAuth() always returns a value
+export const auth = initAuth()!;
 
 // Export types for TypeScript
 export type Session = typeof auth.$Infer.Session;

@@ -1,5 +1,5 @@
 import express from "express";
-import betterAuthRoutes from "./auth.routes";
+import betterAuthRoutes from "./auth.routes.js";
 
 const router = express.Router();
 
