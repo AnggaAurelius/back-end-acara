@@ -1,12 +1,12 @@
 import { Router } from "express";
-import { auth } from "../lib/auth";
-import ResponseUtil from "../utils/response";
+import { auth } from "../lib/auth.js";
+import ResponseUtil from "../utils/response.js";
 import { toNodeHandler } from "better-auth/node";
 import {
   authLimiter,
   passwordResetLimiter,
   emailVerificationLimiter,
-} from "../middlewares/rate-limit.middleware";
+} from "../middlewares/rate-limit.middleware.js";
 
 const router = Router();
 

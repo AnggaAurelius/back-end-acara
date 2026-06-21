@@ -1,16 +1,19 @@
 {
   "version": 2,
+  "buildCommand": "tsc",
   "builds": [
     {
-      "src": "src/index.ts",
+      "src": "api/index.ts",
       "use": "@vercel/node",
-      "config": { "includeFiles": ["src/**"] }
+      "config": {
+        "includeFiles": ["src/**", "dist/**"]
+      }
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "src/index.ts"
+      "dest": "/api/index.ts"
     }
   ]
 }

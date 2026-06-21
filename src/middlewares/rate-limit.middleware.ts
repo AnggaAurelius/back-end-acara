@@ -1,9 +1,14 @@
 import rateLimit from "express-rate-limit";
-import { IS_PRODUCTION } from "../utils/env";
+import { IS_PRODUCTION } from "../utils/env.js";
 
 /**
  * General API rate limiter
  * Applies to all API routes
+ *
+ * NOTE: In serverless environments, in-memory rate limiting has limitations:
+ * - Each function instance has its own memory, so limits aren't shared
+ * - For production, consider using external stores like Redis or Vercel's rate limiting
+ * - See: https://vercel.com/docs/security/rate-limiting
  */
 export const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes

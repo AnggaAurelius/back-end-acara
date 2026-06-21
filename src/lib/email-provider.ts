@@ -8,7 +8,7 @@ import {
   EMAIL_SMTP_SECURE,
   EMAIL_SMTP_SERVICE_NAME,
   EMAIL_SMTP_USER,
-} from "../utils/env";
+} from "../utils/env.js";
 
 // Create transporter using your existing email configuration
 const createTransporter = () => {
@@ -58,7 +58,7 @@ export const emailProvider = {
 // Template rendering function (reusing your existing approach)
 const renderEmailTemplate = async (
   templateName: string,
-  data: Record<string, any>
+  data: Record<string, any>,
 ): Promise<string> => {
   const templatePath = path.join(
     process.cwd(),
@@ -66,7 +66,7 @@ const renderEmailTemplate = async (
     "utils",
     "mail",
     "templates",
-    templateName
+    templateName,
   );
 
   try {

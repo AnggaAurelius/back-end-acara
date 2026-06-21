@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
-import { auth } from "../lib/auth";
-import ResponseUtil from "../utils/response";
+import { auth } from "../lib/auth.js";
+import ResponseUtil from "../utils/response.js";
 
 // Extend Express Request type to include user and session
 declare global {
@@ -19,21 +19,21 @@ declare global {
 export const betterAuthMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const session = await auth.api.getSession({
       headers: req.headers as any,
     });
-    
+
     if (!session) {
       return ResponseUtil.unauthorized(res, "Authentication required");
     }
-    
+
     // Attach user and session to request object
     req.user = session.user;
     req.session = session.session;
-    
+
     next();
   } catch (error) {
     console.error("Better-Auth middleware error:", error);

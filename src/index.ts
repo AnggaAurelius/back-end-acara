@@ -1,19 +1,24 @@
 import express from "express";
-import router from "./routes/api";
+import router from "./routes/api.js";
 import bodyParser from "body-parser";
 import cors from "cors";
 
 // Import env first to validate environment variables on startup
-import { CLIENT_HOST, BETTER_AUTH_URL, IS_PRODUCTION } from "./utils/env";
-import connectDatabases from "./lib/database";
-import docs from "./docs/route";
-import ResponseUtil from "./utils/response";
-import { apiLimiter } from "./middlewares/rate-limit.middleware";
+import {
+  CLIENT_HOST,
+  BETTER_AUTH_URL,
+  IS_PRODUCTION,
+  validateEnv,
+} from "./utils/env.js";
+import connectDatabases from "./lib/database.js";
+import docs from "./docs/route.js";
+import ResponseUtil from "./utils/response.js";
+import { apiLimiter } from "./middlewares/rate-limit.middleware.js";
 
 const app = express();
 const PORT = 3000;
 
-// Initialize database connection
+// Initialize database connection (with lazy loading and reuse)
 let dbInitialized = false;
 async function initDatabase() {
   if (!dbInitialized) {
@@ -41,13 +46,41 @@ app.use(
 // Apply rate limiting to all routes
 app.use(apiLimiter);
 
+// Validate environment variables on first request
+let envValidated = false;
+app.use((req, res, next) => {
+  if (!envValidated) {
+    const result = validateEnv();
+    if (!result.success) {
+      console.error("Environment validation failed:", result.error);
+      return res.status(500).json({
+        success: false,
+        error: "Server configuration error",
+        message: "Missing or invalid environment variables",
+        details: result.error, // Always show details so we can debug
+        hint: "Check Vercel Dashboard → Settings → Environment Variables",
+      });
+    }
+    envValidated = true;
+    console.log("✅ Environment validated");
+  }
+  next();
+});
+
 // Initialize database on first request
 app.use(async (_req, res, next) => {
   try {
     await initDatabase();
     next();
   } catch (error) {
-    res.status(500).json({ error: "Database initialization failed" });
+    console.error("Database initialization error:", error);
+    return res.status(500).json({
+      success: false,
+      error: "Database initialization failed",
+      message: IS_PRODUCTION
+        ? "Service temporarily unavailable"
+        : String(error),
+    });
   }
 });
 
@@ -95,8 +128,8 @@ app.use(
   },
 );
 
-// For local development
-if (!IS_PRODUCTION) {
+// For local development only
+if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log(`🚀 Server is running on port ${PORT}`);
     console.log(`📚 API Documentation: http://localhost:${PORT}/api-docs`);
@@ -105,5 +138,5 @@ if (!IS_PRODUCTION) {
   });
 }
 
-// Export for Vercel serverless
+// Export for Vercel serverless - this is the critical part!
 export default app;
